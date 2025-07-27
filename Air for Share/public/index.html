@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirForShare X - Ultra-Advanced File Sharing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Ultra-advanced web-based real-time file sharing tool with WebRTC P2P transfer">
+</head>
+<body class="dark-theme">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeToggle" class="theme-btn">
+            <span class="theme-icon">🌙</span>
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>AirForShare <span class="logo-x">X</span></h1>
+                <p class="tagline">Ultra-Advanced File Sharing</p>
+            </div>
+            <div class="connection-status">
+                <div class="status-indicator" id="connectionStatus">
+                    <span class="status-dot idle"></span>
+                    <span class="status-text">Idle</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- File Upload Section -->
+            <section class="upload-section glass-card">
+                <div class="upload-header">
+                    <h2>Share Files</h2>
+                    <p>Drag & drop files or click to select</p>
+                </div>
+                
+                <div class="file-upload-area" id="fileUploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <p class="upload-text">Drop files here or <span class="upload-link">browse</span></p>
+                        <p class="upload-subtext">Supports up to 10GB+ files</p>
+                    </div>
+                    <input type="file" id="fileInput" multiple hidden>
+                </div>
+
+                <!-- File Preview -->
+                <div class="file-preview" id="filePreview" style="display: none;">
+                    <h3>Selected Files</h3>
+                    <div class="file-list" id="fileList"></div>
+                    <div class="total-progress" id="totalProgress" style="display: none;">
+                        <div class="progress-info">
+                            <span class="progress-text">Total Progress</span>
+                            <span class="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="totalProgressFill"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Session Section -->
+            <section class="session-section">
+                <div class="session-card glass-card">
+                    <h3>Create Session</h3>
+                    <button class="btn btn-primary" id="createSessionBtn">
+                        <span class="btn-text">Generate Session Code</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <div class="session-info" id="sessionInfo" style="display: none;">
+                        <div class="session-code-display">
+                            <label>Session Code:</label>
+                            <div class="code-container">
+                                <code id="sessionCode"></code>
+                                <button class="copy-btn" id="copySessionBtn" title="Copy to clipboard">📋</button>
+                            </div>
+                        </div>
+                        <div class="qr-container" id="qrContainer"></div>
+                    </div>
+                </div>
+
+                <div class="join-card glass-card">
+                    <h3>Join Session</h3>
+                    <div class="input-group">
+                        <input type="text" id="joinSessionInput" placeholder="Enter session code" class="session-input">
+                        <button class="btn btn-secondary" id="joinSessionBtn">
+                            <span class="btn-text">Join</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Encryption Section -->
+            <section class="encryption-section glass-card" style="display: none;" id="encryptionSection">
+                <div class="encryption-header">
+                    <h3>🔒 File Encryption</h3>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="encryptionToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="encryption-options" id="encryptionOptions" style="display: none;">
+                    <div class="input-group">
+                        <input type="password" id="encryptionPassword" placeholder="Enter encryption passphrase" class="session-input">
+                        <button class="btn btn-accent" id="generatePasswordBtn">Generate</button>
+                    </div>
+                    <p class="encryption-note">Files will be encrypted with AES-256 before sending</p>
+                </div>
+            </section>
+
+            <!-- Download History -->
+            <section class="history-section glass-card">
+                <h3>Download History</h3>
+                <div class="history-container">
+                    <div class="history-empty" id="historyEmpty">
+                        <p>No files received yet</p>
+                    </div>
+                    <div class="history-table" id="historyTable" style="display: none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Size</th>
+                                    <th>Received</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="decryptionModal" style="display: none;">
+        <div class="modal glass-card">
+            <h3>🔒 Encrypted File Received</h3>
+            <p>This file is encrypted. Enter the passphrase to decrypt and download.</p>
+            <div class="input-group">
+                <input type="password" id="decryptionPassword" placeholder="Enter passphrase" class="session-input">
+                <button class="btn btn-primary" id="decryptBtn">Decrypt</button>
+            </div>
+            <button class="btn btn-secondary" id="cancelDecryptBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
